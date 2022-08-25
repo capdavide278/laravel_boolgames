@@ -7,6 +7,6 @@ use Illuminate\Database\Eloquent\Model;
 class Videogames extends Model
 {
     protected $fillable = [
-        'nome', 'descrizione'
+        'nome', 'descrizione', 'img'
     ];
 }
