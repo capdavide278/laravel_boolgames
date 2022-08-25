@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Videogame;
 use App\Videogames;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Videogame;
+use Illuminate\Support\Facades\Auth;
 
 class VideogamesController extends Controller
 
@@ -104,8 +105,28 @@ class VideogamesController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Videogames $videogame)
+
     {
-        //
+        if (Auth::id() != $videogame->user_id) abort(401);
+
+        // TODO: inplement soft deleting
+        // $videogames->tags()->sync([]); // equivalente a detach()
+        $videogame->tags()->detach();
+        $videogame->delete();
+
+        return redirect()->route('videogames.index')->with('deleted', "Il videogames <strong>{$videogame->nome}</strong> è stato eliminato");
+    }
+
+    public function getSlug(Request $request) {
+        // /admin/getslug?nome=Questo è il titolo
+        $nome = $request->query('nome');
+        $slug = Videogames::getSlug($nome);
+
+        return response()->json([
+            'success'   => true,
+            'response'  => $slug
+        ]);
     }
 }
+
